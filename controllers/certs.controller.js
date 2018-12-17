@@ -253,6 +253,4 @@ module.exports.certUpdate = function (request, response, next) {
             console.log("insert : "+res);
             response.redirect('/certs');
         })});
-
-    response.redirect('/certs');
 };
