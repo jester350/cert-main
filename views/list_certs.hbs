@@ -75,19 +75,23 @@ txt += "The node value: " + x.nodeValue + "<br>";
                 <th width="200">Certificate</th>
             </tr>
         </thead>
-
         <thead>
+        <form action="/certs" method="post" name="filtercerts" id="filtercerts" encType="multipart/form-data">
+
             <tr>
                 <th>
-                    <input type="text" name="certFilter" value="">
+                    <input type="text" name="certFilter" value="{{certfilter}}">
                 </th>
                 <th>
-                    <input type="text" name="systemFilter" value="">
+                    <input type="text" name="projectFilter" value="{{projectfilter}}">
                 </th>
-                <th><a href="/certs/add" class = "btn btn-primary pull-left" style="margin-top:5px;margin-right:15px;">Search</a></th>
+                <th>
+                    <input type="text" name="deviceFilter" value="">
+                </th>
+                <th><input type="submit" value="Sendit"></th>
             </tr>
+        </form>
         </thead>
-
         <tbody id="names" class="collection with-header">
             {{#each data}}
             <tr class="{{classtype}}">

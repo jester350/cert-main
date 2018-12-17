@@ -9,11 +9,12 @@ console.log("cert route");
 //  res.render("list_certs", { title: "BPDTS Certs" });
 //});
 
-router.route("/").get(ctrlCerts.certsGetAll);
+router.route("/").all(ctrlCerts.certsGetAll);
 
 router.route("/add").get(ctrlCerts.certAddOne);
 router.route("/postcert").post(ctrlCerts.certPost);
 router.route("/record:certId").get(ctrlCerts.certsGetOne);
 router.route("/updateCert").post(ctrlCerts.certUpdate);
+router.route("/filter").post(ctrlCerts.certsGetAll);
 
 module.exports = router;

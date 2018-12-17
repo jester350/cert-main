@@ -40,7 +40,7 @@ console.log("root "+appRoot);
 //  });
 
 
-// var mailFromGod = schedule.scheduleJob('30 * * * * *', cron.godmail); // MAIL CRON LINE
+// var mailFromGod = schedule.scheduleJob('30 * * * * *', cron.godmail); MAIL CRON LINE
 
 // app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 //app.use('/jquery-ui', express.static(__dirname + '/node_modules/jquery-ui/external/jquery-1.12.1/'));
@@ -101,13 +101,13 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use(session({
     // name: 'certdb@bpdts.com',
     key: 'user_sid',
-    secret: 'The sky above the port was the color of television, tuned to a dead channel',
+    secret: 'somerandonstuffs',
     resave: false,
     saveUninitialized: false,
     cookie: {
         // expires: 6
         name: "certDB",
-        expires: 14 * 24 * 3600000
+        expires: 600000
     }
 }));
 

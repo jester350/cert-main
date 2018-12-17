@@ -11,6 +11,14 @@
         <option value="{{systemid}}">{{systemname}}</option>
         {{/each}}
     </select><br>
+
+    <label for="name">User : </label>
+    <select name = "user">
+        {{#each userlist}}
+        <option value="{{userid}}">{{useremail}}</option>
+        {{/each}}
+    </select><br>
+
     <input type="file" name="theFile" />
     <br><input type="submit" value='Submit'>
 </form>

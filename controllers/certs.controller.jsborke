@@ -9,17 +9,17 @@ var pagerStart=0;
 console.log('cert controller');
 
 module.exports.certsGetAll = function (request, response, next) {
-console.log("body response");
-console.log(response.body);
+
     function countrec() {
         console.log("in select db func");
         return new Promise(function (resolve, reject) {
             pool.query('SELECT count(*) as rowcount \
         FROM cert INNER JOIN cert_system_junc ON cert.row_id = cert_system_junc.cert \
         inner join systems on systems.row_id = cert_system_junc.system', (err, res) => {
+                    console.log(res.rows);
                     kev = 2;
                     if (err) return next(err);
-                    console.log(res.rows);
+
                     console.log('render test after promise');
                 
                 return rowcount;
@@ -34,27 +34,26 @@ console.log(response.body);
         console.log("in select db func "+username);
         var certfilter = "";
         var projectfilter = "";
-        if (request.body.certFilter) {
-            certfilter = request.body.certFilter.toUpperCase();
-        }
-        if (request.body.projectFilter) {
-            projectfilter = request.body.projectFilter.toUpperCase();
-        }
         console.log("request query set to : "+request.query);
+        if (request.query && request.query.certfilter) {
+            certfilter = request.query.certfilter};
+
+        if (request.query && request.query.projectfilter) {
+            projectfilterset = request.query.projectfilter};
 
         console.log("first query vars : "+certfilter+" : "+request.query.certfilter);
 
         squery = 'SELECT cert.row_id as rowid, cert.name as certname,cert.start_date as certStartDate,cert.expiry_date as certExpiryDate,systems.name as systemName,cert.cert_file as certFile \
         FROM cert INNER JOIN cert_system_junc ON cert.row_id = cert_system_junc.cert \
         inner join systems on systems.row_id = cert_system_junc.system \
-        WHERE UPPER(cert.name) like \'%'+certfilter+'%\' and UPPER(systems.name) like \'%'+projectfilter+'%\' \
+        WHERE cert.name like \'%'+certfilter+'%\' and systems.name like \'%'+certfilter+'%\' \
         ORDER BY certExpiryDate ASC';
         console.log("squery : "+squery);
         return new Promise(function (resolve, reject) {
             pool.query(squery, (err, res) => {
+                    console.log(res.rows);
                     kev = 2;
                     if (err) return next(err);
-                    console.log(res.rows);
                     console.log("second request query set to : "+request.query.certfilter);
                     if (request.query && request.query.offset) {
                         offset = parseInt(request.query.offset, 10);
@@ -90,14 +89,14 @@ console.log(response.body);
                     recordDetails = {totalRecords: res.rows.length,recPerPage: count,pageCount: Math.ceil(res.rows.length/count),currentPage: offset,pagerStart: pagerStart};
                     console.log(recordDetails);
                     response
-                        .render('list_certs', { data: res.rows.slice(offset,offset+count), recordDetails: recordDetails, title: 'Cert Database' ,uname: username, accessLvl: accessLvl,certfilter: certfilter,projectfilter: projectfilter});
+                        .render('list_certs', { data: res.rows.slice(offset,offset+count), recordDetails: recordDetails, title: 'Cert Database' ,uname: username, accessLvl: accessLvl});
 
                     // resolve(res.rows[0].rowid);
                 }
             )
         })
     };
-    console.log("*********** request : "+request.body.certFilter);
+    console.log("request : "+request);
     console.log("call db func");
     kev = "";
     rowcount=countrec();
@@ -145,25 +144,41 @@ module.exports.certsGetOne = function (request, response, next) {
 
 module.exports.certAddOne = function (request, response, next) {
     console.log("POST new cert"); 
+    
+    getSystem = new Promise((resolve, reject) => { {
+        // Setting URL and headers for request
 
-    function runsql2 (sqlquery) {
-        return new Promise((resolve, reject) => {
-            pool.query(sqlquery, (err, res) => {
-            if (err) {
-              return reject (err)
-            }
-            resolve(res.rows)
-          })
+        // Return new promise 
+        return new Promise(function(resolve, reject) {
+            // Do async job
+            pool.query('SELECT row_id as systemid, name as systemname from systems', (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res.rows);
+                }
+            })
         })
-      }
+    
+    }})    
+    
+    Promise.all([getSystem]).then(console.log("all sys "+res.rows));
+    
+    var getSystem = runsql();
 
-    console.log("call sync");
-    Promise.all([
-        runsql2('SELECT row_id as systemid, name as systemname from systems'),
-        runsql2('SELECT id as userId,email as userEmail from users')
-      ])
-      .then((result) => response.render('addCert', { data: result[0],userlist:result[1], title: 'Add Cert' }))
-      .catch((err) => console.log(err))
+    getSystem.then(function(result) {
+        systems = result;
+        console.log("got list of systems");
+        // Use user details from here
+        console.log(systems)
+    }, function(err) {
+        console.log(err);
+    })
+    
+
+            response
+                .render('addCert', { data: systems, title: 'Add Cert' });
+
 };
 
 
