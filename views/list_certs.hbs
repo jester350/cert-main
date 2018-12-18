@@ -1,5 +1,7 @@
 
-
+<div class = "row">
+<div class = "col-md-1"></div>
+<div class = "col-md-10">
 <nav aria-label="Page navigation example">
   <ul class="pagination">
 <div id="pagebut"></div>
@@ -52,7 +54,7 @@ function nextpage() {
   <option value="50">50</option>
   <option value="ALL">ALL</option>
 </select>
-
+</div></div>
 <script>
 var x = document.getElementById("recordsToDisplay");
 var txt = "";
@@ -61,18 +63,17 @@ txt += "The node value: " + x.nodeValue + "<br>";
 </script>
 
 <div class = "row">
-<div class = "col-md-12">
-    <div class = "table-responsive">
+<div class = "col-md-1"></div>
+<div class = "col-md-10">
         <table class ="table">
         <thead>
             <tr>
-                <th width="200">Cert&nbsp;Name</th>
-                <th width="200">Project</th>
-                <th width="200">Device</th>
-                <th width="300">Start Date</th>
-                <th width="300">Expiry Date</th>
-                <th width="200">Days till Expiry</th>
-                <th width="200">Certificate</th>
+                <th>Cert&nbsp;Name</th>
+                <th>Project</th>
+                <th>Device</th>
+                <th>Start Date</th>
+                <th>Expiry Date</th>
+                <th>Days till Expiry</th>
             </tr>
         </thead>
         <thead>
@@ -87,8 +88,7 @@ txt += "The node value: " + x.nodeValue + "<br>";
                 </th>
                 <th>
                     <input type="text" name="deviceFilter" value="">
-                </th>
-                <th><input type="submit" value="Sendit"></th>
+                    <input type="submit" value="Sendit"></th>
             </tr>
         </form>
         </thead>
@@ -96,12 +96,11 @@ txt += "The node value: " + x.nodeValue + "<br>";
             {{#each data}}
             <tr class="{{classtype}}">
                 <td><a id = "certname"  href="/certs/record{{rowid}}">{{certname}}</a></td>
-                <td class="{{classtype}}">{{{systemname}}}</td>
+                <td>{{{systemname}}}</td>
                 <td></td>
                 <td>{{{certstartdate}}}</td>
                 <td>{{{certexpirydate}}}</td>
                 <td>{{{daysleft}}}</td>
-                <td>{{{certfile}}}</td>
                 {{!-- TODO: search employee name --}}
                 <td><a id = "certname" href="/certs/{{row_id}}">{{name}}</a></td>
             </tr>
