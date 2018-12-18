@@ -51,7 +51,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('css',path.join(appRoot, 'public/stylesheets/css'));
 app.set('view engine', 'hbs');
 app.use('/jquery331', express.static(__dirname + '/public/javascripts/'));
-app.use('/bootstrap', express.static(__dirname + '/public/bootstrap-3.3.7/dist/'));
+app.use('/bootstrap337', express.static(__dirname + '/public/bootstrap-3.3.7/dist/'));
+app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
 app.use('/javascript', express.static(__dirname + '/public/javascripts/'));
 app.use('/modules', express.static(__dirname + '/node_modules/'));
 
@@ -233,6 +234,19 @@ app.get('/admin', (req, res,next) => {
         res.redirect('/login');
     }}
 });
+
+app.get('/systems', (req, res,next) => {
+    console.log("systems");
+    if (req.session.user && req.cookies.user_sid) {
+        if (accessLvl == 1) {
+            // res.sendFile(__dirname + '/public/pages/signup.html');
+            app.use('/systems',usersRouter);
+        next();
+    } else {
+        res.redirect('/login');
+    }}
+});
+
 // route for user logout
 app.get('/logout', (req, res) => {
     res.seesioncookie = "expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
