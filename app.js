@@ -175,7 +175,7 @@ app.route('/login')
         //    console.log(user.get('username'));
         //  });
 
-        User.findOne({ where: { username: username } }).then(function (user) {
+        User.findOne({ where: { email: username } }).then(function (user) {
             if (!user) {
                 console.log("user not found");
                 res.redirect('/login');
