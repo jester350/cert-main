@@ -46,9 +46,14 @@ console.log("root "+appRoot);
 //app.use('/jquery-ui', express.static(__dirname + '/node_modules/jquery-ui/external/jquery-1.12.1/'));
 
 // view engine setup
-app.set('public', path.join(__dirname, 'public'));
+app.set('public', path.join(appRoot, 'public'));
 app.set('views', path.join(__dirname, 'views'));
+app.set('css',path.join(appRoot, 'public/stylesheets/css'));
 app.set('view engine', 'hbs');
+app.use('/jquery331', express.static(__dirname + '/public/javascripts/'));
+app.use('/bootstrap', express.static(__dirname + '/public/bootstrap-3.3.7/dist/'));
+app.use('/javascript', express.static(__dirname + '/public/javascripts/'));
+app.use('/modules', express.static(__dirname + '/node_modules/'));
 
 var hbs = require('hbs');
 hbs.registerHelper('compare', function (lvalue, operator, rvalue, options) {
