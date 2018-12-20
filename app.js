@@ -19,7 +19,7 @@ var fs = require('fs');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var certsRouter = require('./routes/certs');
-var testRouter = require('./routes/test');
+var deviceRouter = require('./routes/device');
 
 
 
@@ -219,6 +219,17 @@ app.get('/certs/', (req, res,next) => {
         next();
     } else {
         console.log("dont do a cert thing");
+        res.redirect('/login');
+    }
+});
+
+app.get('/devices/', (req, res,next) => {
+    if (req.session.user && req.cookies.user_sid) {
+        console.log("do a device thing");
+        app.use('/devices',deviceRouter);
+        next();
+    } else {
+        console.log("dont do a device thing");
         res.redirect('/login');
     }
 });

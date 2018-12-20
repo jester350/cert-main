@@ -1,0 +1,16 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[gui]
+	wmstate = normal
+	geometry = 2184x1722+337+193 417 508
+[remote "cert-main"]
+	url = https://github.com/jester350/cert-main.git
+	fetch = +refs/heads/*:refs/remotes/cert-main/*
+[branch "master"]
+	remote = cert-main
+	merge = refs/heads/master
