@@ -44,13 +44,13 @@ const sequelize = new Sequelize(userdatabase, user, password, {
 
 // setup User model and its fields.
 
-const User = sequelize.define('accesslvl', {
+const Project = sequelize.define('projects', {
   name: {
     type: Sequelize.STRING,
     unique: true,
     allowNull: false
 },
-level: {
+contact: {
     type: Sequelize.INTEGER,
     unique: true,
     allowNull: false
@@ -66,4 +66,4 @@ sequelize.sync()
     .catch(error => console.log('This error occured', error));
 
 // export User model for use in other files.
-module.exports = User;
+module.exports = Project;
