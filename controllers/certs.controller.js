@@ -44,9 +44,10 @@ console.log(response.body);
 
         console.log("first query vars : "+certfilter+" : "+request.query.certfilter);
 
-        squery = 'SELECT cert.row_id as rowid, cert.name as certname,cert.start_date as certStartDate,cert.expiry_date as certExpiryDate,systems.name as systemName,cert.cert_file as certFile \
+        squery = 'SELECT cert.row_id as rowid, cert.name as certname,cert.start_date as certStartDate,cert.expiry_date as certExpiryDate,systems.name as systemName,cert.cert_file as certFile,devices.name as devicename \
         FROM cert INNER JOIN cert_system_junc ON cert.row_id = cert_system_junc.cert \
         inner join systems on systems.row_id = cert_system_junc.system \
+        inner join devices on devices.row_id = cert_system_junc.system \
         WHERE UPPER(cert.name) like \'%'+certfilter+'%\' and UPPER(systems.name) like \'%'+projectfilter+'%\' \
         ORDER BY certExpiryDate ASC';
         console.log("squery : "+squery);
