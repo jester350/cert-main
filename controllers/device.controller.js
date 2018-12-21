@@ -93,32 +93,39 @@ console.log(response.body);
 
 
 
-module.exports.certsGetOne = function (request, response, next) {
+module.exports.deviceGetOne = function (request, response, next) {
     console.log("running get single cert...");
-    const id = request.params.certId;
+    const id = request.params.deviceId;
     if (request.session.user && request.cookies.user_sid) {
-    console.log("user during get cert "+username);
-    pool.query('SELECT row_id as projectid, name as projectname from systems', (err, res) => {
+    console.log("user during get device "+username);
+    pool.query('SELECT row_id as projectid, name as projectname from projects', (err, res) => {
         if (err) return next(err);
         console.log(res.rows);
     projects=res.rows;
     })
-    pool.query('SELECT cert.name as certname,cert.start_date as certStartDate,cert.expiry_date as certExpiryDate,systems.name as systemname, cert.cert_file as certfile \
-        FROM cert INNER JOIN cert_system_junc ON cert.row_id = cert_system_junc.cert \
-        inner join systems on systems.row_id = cert_system_junc.system WHERE cert.row_id = $1', [id], (err, res) => {
+    squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectname,users.email as useremail \
+    FROM devices \
+    INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
+    inner join projects on projects.row_id = devices_project_junc.project \
+    inner join users on users.id = projects.contact \
+    WHERE devices.row_id = $1';
+
+    pool.query('SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectname,users.email as useremail \
+    FROM devices \
+    INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
+    inner join projects on projects.row_id = devices_project_junc.project \
+    inner join users on users.id = projects.contact \
+    WHERE devices.row_id = $1', [id], (err, res) => {
             // pool.query('SELECT * FROM cert where row_id = $1', [id], (err, res) => {
             if (err) return next(err);
-            var certname = res.rows[0].certname;
+            console.log(res.rows[0]);
+            var devicename = res.rows[0].devicename;
             var today = new Date();
-            var sysname = res.rows[0].systemName;
-            var sdate = date.format(res.rows[0].certstartdate, 'YYYY-MM-DD');
-            var edate = date.format(res.rows[0].certexpirydate, 'YYYY-MM-DD');
-            var daysLeft = date.subtract(res.rows[0].certexpirydate, today).toDays();
-            var sysname = res.rows[0].systemname;
-            var certfile = res.rows[0].certfile;
-            console.log("project : "+projects[1].projectname);
+            var projectname = res.rows[0].projectname;
+            var contact = res.rows[0].useremail;
+            // console.log("project : "+projects[1].projectname);
             response
-                .render('getCert', { data: res.rows, projects: projects, title: 'Certificate: '+certname, certname: certname,sdate: sdate, edate: edate, sysname: sysname, dleft: daysLeft,certfile: certfile,certid: id });
+                .render('getDevice', { data: res.rows, projects: projects, title: 'Device : '+devicename, devicename: devicename,project: projectname, contact: contact,deviceid: id });
         })
     } else {
         console.log("exit 2");
