@@ -9,15 +9,14 @@ var pagerStart=0;
 console.log('cert controller');
 
 module.exports.deviceGetAll = function (request, response, next) {
-console.log("device list all body response");
+console.log("body response");
 console.log(response.body);
     function countrec() {
         console.log("in select db func");
         return new Promise(function (resolve, reject) {
             pool.query('SELECT count(*) as rowcount \
-        FROM devices INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
-        inner join systems on systems.row_id = devices_project_junc.project', (err, res) => {
-                    kev = 2;
+        FROM cert INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
+        inner join projects on projects.row_id = devices_project_junc.project', (err, res) => {
                     if (err) return next(err);
                     console.log(res.rows);
                     console.log('render test after promise');
@@ -34,8 +33,8 @@ console.log(response.body);
         console.log("in select db func "+username);
         var devicefilter = "";
         var projectfilter = "";
-        if (request.body.certFilter) {
-            certfilter = request.body.certFilter.toUpperCase();
+        if (request.body.deviceFilter) {
+            devicefilter = request.body.deviceFilter.toUpperCase();
         }
         if (request.body.projectFilter) {
             projectfilter = request.body.projectFilter.toUpperCase();
@@ -44,7 +43,7 @@ console.log(response.body);
 
         console.log("first query vars : "+devicefilter+" : "+request.query.devicefilter);
 
-        squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as systemName,users.email as useremail \
+        squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectName,users.email as useremail \
         FROM devices \
         INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
         inner join projects on projects.row_id = devices_project_junc.project \
@@ -54,8 +53,8 @@ console.log(response.body);
         console.log("squery : "+squery);
         return new Promise(function (resolve, reject) {
             pool.query(squery, (err, res) => {
-                    kev = 2;
                     if (err) return next(err);
+                    console.log("run sql");
                     console.log(res.rows);
                     console.log("second request query set to : "+request.query.devicefilter);
                     if (request.query && request.query.offset) {
@@ -73,7 +72,7 @@ console.log(response.body);
                     recordDetails = {totalRecords: res.rows.length,recPerPage: count,pageCount: Math.ceil(res.rows.length/count),currentPage: offset,pagerStart: pagerStart};
                     console.log(recordDetails);
                     response
-                        .render('list_devices', { data: res.rows.slice(offset,offset+count), recordDetails: recordDetails, title: 'Cert Database' ,uname: username, accessLvl: accessLvl,devicefilter: devicefilter,projectfilter: projectfilter});
+                        .render('list_devices', { data: res.rows.slice(offset,offset+count), recordDetails: recordDetails, title: 'Device Database' ,uname: username, accessLvl: accessLvl,devicefilter: devicefilter,projectfilter: projectfilter});
 
                     // resolve(res.rows[0].rowid);
                 }
@@ -84,9 +83,10 @@ console.log(response.body);
     console.log("call db func");
     kev = "";
     rowcount=countrec();
+    
     console.log("row count"+rowcount);
     readdb().then((rowid) => {
-        console.log(rowid)//Value here is defined as u expect.
+        console.log(rowid)
     });
     console.log("after db func");
 };
@@ -126,8 +126,8 @@ module.exports.certsGetOne = function (request, response, next) {
     }
 };
 
-module.exports.certAddOne = function (request, response, next) {
-    console.log("POST new cert"); 
+module.exports.deviceAddOne = function (request, response, next) {
+    console.log("POST new device"); 
 
     function runsql2 (sqlquery) {
         return new Promise((resolve, reject) => {
