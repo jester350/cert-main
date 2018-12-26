@@ -8,10 +8,10 @@
     <input type="date" name="start_date" id="date"><br>
     <label for="date4">Expiry Date:</label>
     <input type="date" name="expiry_date" id="date2"><br>
-    <label for="name">System : </label>
-    <select name = "systems">
-        {{#each data}}
-        <option value="{{systemid}}">{{systemname}}</option>
+    <label for="name">Device</label>
+    <select name = "device">
+        {{#each devices}}
+        <option value="{{deviceid}}">{{devicename}}</option>
         {{/each}}
     </select><br>
 

@@ -11,7 +11,7 @@ console.log("cert route");
 
 router.route("/").all(ctrlCerts.certsGetAll);
 
-router.route("/add").get(ctrlCerts.certAddOne);
+router.route("/addcert").get(ctrlCerts.certAddOne);
 router.route("/postcert").post(ctrlCerts.certPost);
 router.route("/record:certId").get(ctrlCerts.certsGetOne);
 router.route("/updateCert").post(ctrlCerts.certUpdate);
