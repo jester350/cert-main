@@ -10,7 +10,7 @@ console.log("users route");
 //});
 
 router.route("/").get(ctrlUsers.admin);
-router.route("/add").get(ctrlUsers.add);
+router.route("/adduser").get(ctrlUsers.add);
 router.route("/postuser").post(ctrlUsers.postUser);
 
 module.exports = router;

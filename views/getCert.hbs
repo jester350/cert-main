@@ -4,14 +4,23 @@
 
 <form action="updatecert" method="post" name="updatecert" id="updatecert" encType="multipart/form-data">
     <input type="hidden" id="certid" name="certid" value="{{certid}}">
+    <input type="hidden" id="certdevicejuncid" name="certdevicejuncid" value="{{certdevicejuncid}}">
     <label for="name">Cert Name::</label>
     <input type="text" name="name" id="name" value="{{{certname}}}"><br>
     <label for="date3">Start Date:</label>
     <input type="date" name="start_date" id="date" value="{{{sdate}}}"><br>
     <label for="date4">Expiry Date:</label>
     <input type="date" name="expiry_date" id="date2" value="{{{edate}}}"><br>
+
+    <label for="textfield">Device Name</label>
+    <select name = "device" selected = {{{projectname}}}>
+        {{#each devices}}
+            <option value="{{deviceid}}" option selected="" id="{{devicename}}">{{devicename}}</option>
+        {{/each}}
+    </select><br>
+
     <label for="textfield">System Name</label>
-    <select name = "systems" selected = {{{sysname}}}>
+    <select name = "project" selected = {{{projectname}}}>
         {{#each projects}}
             <option value="{{projectid}}" option selected="" id="{{projectname}}">{{projectname}}</option>
         {{/each}}
@@ -26,6 +35,7 @@ $(function() {
 	$( "#Datepicker1" ).datepicker(); 
 });
 
-document.getElementById("{{sysname}}").selected = "Selected";
+document.getElementById("{{projectname}}").selected = "Selected";
+document.getElementById("{{devicename}}").selected = "Selected";
 
 </script>

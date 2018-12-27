@@ -1,0 +1,24 @@
+<div class = "row">
+<div class = "col-md-1"></div>
+<div class = "col-md-10">
+
+<form action="updatedevice" method="post" name="updatedevice" id="updatedevice" encType="multipart/form-data">
+    <input type="hidden" id="deviceid" name="deviceid" value="{{deviceid}}">
+    <label for="name">Device Name</label>
+    <input type="text" name="name" id="name" value="{{{devicename}}}"><br>
+    <label for="textfield">Project Name</label>
+    <select name = "systems" selected = {{{projectname}}}>
+        {{#each projects}}
+            <option value="{{projectid}}" option selected="" id="{{projectname}}">{{projectname}}</option>
+        {{/each}}
+    </select><br>
+    <br><input type="submit" value='Submit'>
+</form>
+<script type="text/javascript">
+$(function() {
+	$( "#Datepicker1" ).datepicker(); 
+});
+
+document.getElementById("{{projectname}}").selected = "Selected";
+
+</script>

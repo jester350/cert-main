@@ -69,8 +69,8 @@ txt += "The node value: " + x.nodeValue + "<br>";
         <thead>
             <tr>
                 <th>Cert&nbsp;Name</th>
-                <th>Project</th>
                 <th>Device</th>
+                <th>Project</th>
                 <th>Start Date</th>
                 <th>Expiry Date</th>
                 <th>Days till Expiry</th>
@@ -96,8 +96,8 @@ txt += "The node value: " + x.nodeValue + "<br>";
             {{#each data}}
             <tr class="{{classtype}}">
                 <td><a id = "certname"  href="/certs/record{{rowid}}">{{certname}}</a></td>
-                <td>{{{systemname}}}</td>
-                <td></td>
+                <td>{{{devicename}}}</td>
+                <td>{{projectname}}</td>
                 <td>{{{certstartdate}}}</td>
                 <td>{{{certexpirydate}}}</td>
                 <td>{{{daysleft}}}</td>
@@ -121,4 +121,4 @@ txt += "The node value: " + x.nodeValue + "<br>";
     </div>
 </div>
 </div>
-{{rowcount}}
+

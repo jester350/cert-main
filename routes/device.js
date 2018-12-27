@@ -11,9 +11,9 @@ console.log("cert route");
 
 router.route("/").all(ctrlDevice.deviceGetAll);
 
-//router.route("/add").get(ctrlDevice.deviceAddOne);
-//router.route("/postcert").post(ctrlDevice.devicePost);
-//router.route("/record:certId").get(ctrlDevice.deviceGetOne);
+router.route("/add").get(ctrlDevice.deviceAddOne);
+router.route("/add/postdevice").post(ctrlDevice.devicePost);
+router.route("/record:deviceId").get(ctrlDevice.deviceGetOne);
 //router.route("/updateCert").post(ctrlDevice.deviceUpdate);
 //router.route("/filter").post(ctrlDevice.deviceGetAll);
 

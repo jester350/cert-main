@@ -1,8 +1,8 @@
 module.exports = {
     user: 'postgres',
-    host: '127.0.0.1',
+    host: 'jester.dyndns-ip.com',
     database: 'certs',
     userdatabase: 'certs',
-    password: 'kissit2001',
+    password: '_K1s51t1977!',
     port: "8062"
 };

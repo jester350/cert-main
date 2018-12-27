@@ -15,8 +15,8 @@ console.log(response.body);
         console.log("in select db func");
         return new Promise(function (resolve, reject) {
             pool.query('SELECT count(*) as rowcount \
-        FROM devices INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
-        inner join systems on systems.row_id = devices_project_junc.project', (err, res) => {
+        FROM devices INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+        inner join projects on projects.row_id = device_project_junc.project', (err, res) => {
                     kev = 2;
                     if (err) return next(err);
                     console.log(res.rows);
@@ -44,12 +44,22 @@ console.log(response.body);
 
         console.log("first query vars : "+devicefilter+" : "+request.query.devicefilter);
 
-        squery = 'SELECT devices.row_id as rowid, devices.name as devicename,systems.name as systemName \
+        squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as systemName,users.email as useremail \
         FROM devices \
-        INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
-        inner join systems on systems.row_id = devices_project_junc.project \
-        WHERE UPPER(devices.name) like \'%'+devicefilter+'%\' and UPPER(systems.name) like \'%'+projectfilter+'%\' \
+        INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+        inner join projects on projects.row_id = device_project_junc.project \
+        inner join users on users.id = projects.contact \
+        WHERE UPPER(devices.name) like \'%'+devicefilter+'%\' and UPPER(projects.name) like \'%'+projectfilter+'%\' \
         ORDER BY devices.name ASC';
+
+        squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as systemName,users.email as useremail \
+        FROM devices \
+        INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+        inner join projects on projects.row_id = device_project_junc.project \
+        inner join users on users.id = projects.contact \
+        WHERE UPPER(devices.name) like \'%'+devicefilter+'%\' and UPPER(projects.name) like \'%'+projectfilter+'%\' \
+        ORDER BY devices.name ASC';
+
         console.log("squery : "+squery);
         return new Promise(function (resolve, reject) {
             pool.query(squery, (err, res) => {
@@ -92,32 +102,44 @@ console.log(response.body);
 
 
 
-module.exports.certsGetOne = function (request, response, next) {
+module.exports.deviceGetOne = function (request, response, next) {
     console.log("running get single cert...");
-    const id = request.params.certId;
+    const id = request.params.deviceId;
     if (request.session.user && request.cookies.user_sid) {
-    console.log("user during get cert "+username);
-    pool.query('SELECT row_id as projectid, name as projectname from systems', (err, res) => {
+    console.log("user during get device "+username);
+    pool.query('SELECT row_id as projectid, name as projectname from projects', (err, res) => {
         if (err) return next(err);
         console.log(res.rows);
     projects=res.rows;
     })
-    pool.query('SELECT cert.name as certname,cert.start_date as certStartDate,cert.expiry_date as certExpiryDate,systems.name as systemname, cert.cert_file as certfile \
-        FROM cert INNER JOIN cert_system_junc ON cert.row_id = cert_system_junc.cert \
-        inner join systems on systems.row_id = cert_system_junc.system WHERE cert.row_id = $1', [id], (err, res) => {
+    squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectname,users.email as useremail \
+    FROM devices \
+    INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+    inner join projects on projects.row_id = device_project_junc.project \
+    inner join users on users.id = projects.contact \
+    WHERE devices.row_id = $1';
+
+    pool.query('SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectname,users.email as useremail \
+    FROM devices \
+    INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+    inner join projects on projects.row_id = device_project_junc.project \
+    inner join users on users.id = projects.contact \
+    WHERE devices.row_id = $1', [id], (err, res) => {
             // pool.query('SELECT * FROM cert where row_id = $1', [id], (err, res) => {
             if (err) return next(err);
-            var certname = res.rows[0].certname;
+            console.log(res.rows[0]);
+            var devicename = "";
+            var projectname = "";
+            var contact = "";
+            if (res.rows[0]) {
+            var devicename = res.rows[0].devicename;
             var today = new Date();
-            var sysname = res.rows[0].systemName;
-            var sdate = date.format(res.rows[0].certstartdate, 'YYYY-MM-DD');
-            var edate = date.format(res.rows[0].certexpirydate, 'YYYY-MM-DD');
-            var daysLeft = date.subtract(res.rows[0].certexpirydate, today).toDays();
-            var sysname = res.rows[0].systemname;
-            var certfile = res.rows[0].certfile;
-            console.log("project : "+projects[1].projectname);
+            var projectname = res.rows[0].projectname;
+            var contact = res.rows[0].useremail;
+            };
+            // console.log("project : "+projects[1].projectname);
             response
-                .render('getCert', { data: res.rows, projects: projects, title: 'Certificate: '+certname, certname: certname,sdate: sdate, edate: edate, sysname: sysname, dleft: daysLeft,certfile: certfile,certid: id });
+                .render('getDevice', { data: res.rows, projects: projects, title: 'Device : '+devicename, devicename: devicename,project: projectname, contact: contact,deviceid: id });
         })
     } else {
         console.log("exit 2");
@@ -125,27 +147,49 @@ module.exports.certsGetOne = function (request, response, next) {
     }
 };
 
-module.exports.certAddOne = function (request, response, next) {
-    console.log("POST new cert"); 
+module.exports.deviceAddOne = function (request, response, next) {
+    console.log("running get single cert...");
+    const id = request.params.deviceId;
+    if (request.session.user && request.cookies.user_sid) {
+    console.log("user during get device "+username);
+    pool.query('SELECT row_id as projectid, name as projectname from projects', (err, res) => {
+        if (err) return next(err);
+        console.log(res.rows);
+    projects=res.rows;
+    })
+    squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectname,users.email as useremail \
+    FROM devices \
+    INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+    inner join projects on projects.row_id = device_project_junc.project \
+    inner join users on users.id = projects.contact \
+    WHERE devices.row_id = $1';
 
-    function runsql2 (sqlquery) {
-        return new Promise((resolve, reject) => {
-            pool.query(sqlquery, (err, res) => {
-            if (err) {
-              return reject (err)
-            }
-            resolve(res.rows)
-          })
+    pool.query('SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectname,users.email as useremail \
+    FROM devices \
+    INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+    inner join projects on projects.row_id = device_project_junc.project \
+    inner join users on users.id = projects.contact \
+    WHERE devices.row_id = $1', [id], (err, res) => {
+            // pool.query('SELECT * FROM cert where row_id = $1', [id], (err, res) => {
+            if (err) return next(err);
+            console.log(res.rows[0]);
+            var devicename = "";
+            var projectname = "";
+            var contact = "";
+            if (res.rows[0]) {
+            var devicename = res.rows[0].devicename;
+            var today = new Date();
+            var projectname = res.rows[0].projectname;
+            var contact = res.rows[0].useremail;
+            };
+            // console.log("project : "+projects[1].projectname);
+            response
+                .render('getDevice', { data: res.rows, projects: projects, title: 'Device : '+devicename, devicename: devicename,project: projectname, contact: contact,deviceid: id });
         })
-      }
-
-    console.log("call sync");
-    Promise.all([
-        runsql2('SELECT row_id as systemid, name as systemname from systems'),
-        runsql2('SELECT id as userId,email as userEmail from users')
-      ])
-      .then((result) => response.render('addCert', { data: result[0],userlist:result[1], title: 'Add Cert' }))
-      .catch((err) => console.log(err))
+    } else {
+        console.log("exit 2");
+        response.redirect('/login');
+    }
 };
 
 
@@ -162,30 +206,26 @@ module.exports.certPost_upload_working = function(req,res,next){
   };
 
 
-module.exports.certPost = function (request, response, next) {
-    certFileName="";
-    let certFile = request.files.theFile;
-    if (certFile) {console.log("file upload details : "+certFile.name)
-    certFile.mv(appRoot+'/uploads/'+certFile.name, function(err) {
-        if (err)
-          console.log("file upload failed "+err);
-          console.log("file upload done");
-        var fileUploaded = true;
-      })
-    certFileName=certFile.name};
-    function insertcert(body) {
-        console.log("insert command");
-        console.log(body);
-        console.log("body");
-        var today = new Date();
-        const { name, created_date, created_by, expiry_date, start_date, systems } = body;
+module.exports.devicePost = function (request, response, next) {
 
+    var list_projects="";
+
+console.log("insert device");
+    function insertdevice(body) {
+        console.log("********************* insert device command");
+        console.log(body);
+        console.log("************************* body");
+        var today = new Date();
+        const { deviceid, devicename } = body;
+        list_projects = body.project;
+        console.log(devicename);
+        console.log(list_projects);
         return new Promise(function (resolve, reject) {
-            pool.query('INSERT INTO cert(name, created_date, created_by, expiry_date,start_date,cert_file) VALUES($1, $2, $3, $4, $5,$6)',
-                [name, today, created_by, expiry_date, start_date,certFileName],
+            pool.query('INSERT INTO devices(name) VALUES($1)',
+                [devicename],
                 (err, res) => {
                     if (err) return next(err);
-                    resolve(systems);
+                    resolve(list_projects);
                     // response.redirect('/certs');
                 }
             )
@@ -195,7 +235,7 @@ module.exports.certPost = function (request, response, next) {
     function getmax() {
         console.log("get max");
         return new Promise(function (resolve, reject) {
-            pool.query('select max(row_id) as max from cert', (err, res) => {
+            pool.query('select max(row_id) as max from devices', (err, res) => {
                 if (err) return next(err);
                 max = res.rows.max;
                 resolve(res.rows.max);
@@ -205,21 +245,22 @@ module.exports.certPost = function (request, response, next) {
         })
     };
 
-    insertcert(request.body).then((system) => {
-        console.log(system);
-        pool.query('select max(row_id) from cert', (err, res) => {
+    insertdevice(request.body).then((project) => {
+        console.log("insert device junc table");
+        console.log(project);
+        pool.query('select max(row_id) from devices', (err, res) => {
             if (err) return next(err);
-            // console.log("max::");
-            // console.log(res.rows[0].max);
-            // console.log("done max 2" + system + ":" + res.rows[0].max)//Value here is defined as u expect.
-            pool.query('INSERT INTO cert_system_junc(cert,system) VALUES($1, $2)',
-                [res.rows[0].max, system],
+            for (var projectid in list_projects) {
+                console.log("add device and project to junc")
+                console.log(list_projects[projectid])
+            pool.query('INSERT INTO device_project_junc(device,project) VALUES($1, $2)',
+                [res.rows[0].max, list_projects[projectid]],
                 (err, res) => {
                     if (err) return next(err);
-                })
+                })}
         })
 
-        pool.query('select max(row_id) from cert', (err, res) => {
+        pool.query('select max(row_id) from devices', (err, res) => {
             if (err) return next(err);
             response.redirect('/certs');
         })
@@ -237,18 +278,10 @@ module.exports.certUpdatetest = function (req, res, next) {
 
 
 
-module.exports.certUpdate = function (request, response, next) {
+module.exports.deviceUpdate = function (request, response, next) {
     var certFileName="";
     let certFile = request.files.newcertfile;
     console.log("check for a new file "+request.files.newcertfile);
-    if (certFile) {console.log("file upload details : "+certFile.name)
-    certFileName=certFile.name;
-    certFile.mv(appRoot+'/uploads/'+certFile.name, function(err) {
-        if (err)
-          console.log("file upload failed "+err);
-          console.log("file upload done");
-        var fileUploaded = true;
-      })};
 
         console.log("insert command");
         console.log(request.body);
@@ -256,11 +289,8 @@ module.exports.certUpdate = function (request, response, next) {
         
         console.log("body");
         var today = new Date();
-        const { certid,name, created_date, expiry_date, start_date, systems,currentCertFile } = request.body;
-        var usethisfilename = currentCertFile;
-        console.log(certFileName+" : "+currentCertFile);
+        const { certid,name, created_date, expiry_date, start_date, systems, } = request.body;
 
-        if (certFileName) {usethisfilename = certFileName};
 
         return new Promise(function (resolve, reject) {
         console.log("lets do an update ");
@@ -271,3 +301,4 @@ module.exports.certUpdate = function (request, response, next) {
             response.redirect('/certs');
         })});
 };
+
