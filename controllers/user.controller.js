@@ -24,7 +24,7 @@ module.exports.admin = function (request, response, next) {
     console.log("user admin...");
     const id = request.params.certId;
     User.findAll().then(function(users) {
-        response.render('test', {
+        response.render('list_Users', {
           title: 'User Admin',
           users: users
         });
@@ -41,7 +41,7 @@ module.exports.add = function (request, response, next) {
     path.resolve(__dirname, '.../public');
     // response.sendFile('/public/pages/adduser.html', {root: appRoot});
     response
-        .render('addUser', { data: response.rows, title: 'Add user' });
+        .render('addUser', { data: response.rows, title: 'Add user',accessLvl: accessLvl });
     //response
     //            .render('test', { title: ': Admin'});
 };

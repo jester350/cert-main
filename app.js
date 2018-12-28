@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var logger = require('morgan');
 var date = require('date-and-time');
-var date = require('debug');
+var debug = require('debug');
 var async = require('async');
 var User = require('./models/user');
 var AccessLvl = require('./models/accesslevels');
@@ -16,7 +16,7 @@ var cron = require('./bin/cron');
 var fs = require('fs');
 
 
-var indexRouter = require('./routes/index');
+// var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var certsRouter = require('./routes/certs');
 var deviceRouter = require('./routes/device');
@@ -51,6 +51,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('css',path.join(appRoot, 'public/stylesheets/css'));
 app.set('view engine', 'hbs');
 app.use('/jquery331', express.static(__dirname + '/public/javascripts/'));
+app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 app.use('/bootstrap337', express.static(__dirname + '/public/bootstrap-3.3.7/dist/'));
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
 app.use('/javascript', express.static(__dirname + '/public/javascripts/'));
@@ -97,7 +98,7 @@ hbs.registerHelper('compare', function (lvalue, operator, rvalue, options) {
 
 });
 
-// app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -124,6 +125,17 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(function(req, res,next) {
+    console.log("response result :")
+    console.log(res)
+    //res.send('404: Page not Found', 404);
+    next();
+ });
+ 
+ // Handle 500
+ app.use(function(error, req, res, next) {
+    res.send('500: Internal Server Error', 500);
+ });
 // middleware function to check for logged-in users
 var sessionChecker = (req, res, next) => {
     // console.log(res.cookie(cookie_name , 'cookie_value').send('Cookie is set'));
@@ -287,5 +299,14 @@ app.get('/logout', (req, res) => {
 
 // app.use('/certs',certsRouter);
 // app.use('/test',testRouter);
+
+//app.use(function(req, res) {
+ //   res.send('404: Page not Found', 404);
+ //});
+ 
+ // Handle 500
+ //app.use(function(error, req, res, next) {
+  //  res.send('500: Internal Server Error', 500);
+ //});
 
 module.exports = app;

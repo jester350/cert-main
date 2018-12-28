@@ -15,8 +15,8 @@ console.log(response.body);
         console.log("in select db func");
         return new Promise(function (resolve, reject) {
             pool.query('SELECT count(*) as rowcount \
-        FROM cert INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
-        inner join projects on projects.row_id = devices_project_junc.project', (err, res) => {
+        FROM cert INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+        inner join projects on projects.row_id = device_project_junc.project', (err, res) => {
                     if (err) return next(err);
                     console.log(res.rows);
                     console.log('render test after promise');
@@ -45,8 +45,8 @@ console.log(response.body);
 
         squery = 'SELECT devices.row_id as rowid, devices.name as devicename,projects.name as projectName,users.email as useremail \
         FROM devices \
-        INNER JOIN devices_project_junc ON devices.row_id = devices_project_junc.device \
-        inner join projects on projects.row_id = devices_project_junc.project \
+        INNER JOIN device_project_junc ON devices.row_id = device_project_junc.device \
+        inner join projects on projects.row_id = device_project_junc.project \
         inner join users on users.id = projects.contact \
         WHERE UPPER(devices.name) like \'%'+devicefilter+'%\' and UPPER(projects.name) like \'%'+projectfilter+'%\' \
         ORDER BY devices.name ASC';
